@@ -1,3 +1,8 @@
 sqlachemy 
 aiogram=3.14
 telethon
+openai
+yandex_cloud_ml_sdk
+feedparser
+schedule
+translatepy

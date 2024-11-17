@@ -95,6 +95,7 @@ async def NYT_tech():
     print('NYT_tech')
     RSS_URL = "https://nypost.com/business/feed/"
     feed = feedparser.parse(RSS_URL)
+    print(feed)
     entry = feed.entries[0]
             
     title = translate_to_russian(entry.title)

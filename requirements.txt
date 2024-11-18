@@ -7,3 +7,6 @@ feedparser
 schedule
 translatepy
 g4f
+sqlalchemy[asyncio] 
+asyncpg
+google-generativeai

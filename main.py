@@ -24,8 +24,8 @@ def create_main_menu():
     return main_menu
 
 # Функция для создания меню категорий с кнопками для включения/выключения
-def create_categories_menu(user_id):
-    categories = get_user_categories(user_id)
+async def create_categories_menu(user_id):
+    categories = await get_user_categories(user_id)  # Асинхронный вызов
     
     if not categories:
         return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Нет доступных категорий", callback_data="no_categories")]])
@@ -44,7 +44,7 @@ def create_categories_menu(user_id):
 # Обработчик команды /start
 async def start_command(message: Message):
     user_id = message.from_user.id
-    add_user(user_id)  # Добавляем пользователя в базу данных
+    await add_user(user_id)  # Асинхронный вызов
 
     await message.answer(
         "Добро пожаловать! Вы были добавлены в базу данных. Выберите одну из опций:",
@@ -54,9 +54,10 @@ async def start_command(message: Message):
 # Обработчик нажатия на кнопку "Категории"
 async def show_categories(message: Message):
     user_id = message.from_user.id
+    categories_menu = await create_categories_menu(user_id)  # Асинхронный вызов
     await message.answer(
         "Вот доступные категории. Нажмите на кнопку, чтобы включить или выключить нужную категорию:",
-        reply_markup=create_categories_menu(user_id)
+        reply_markup=categories_menu
     )
 
 async def show_ads_options(message: Message):
@@ -67,8 +68,8 @@ async def toggle_category_callback(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     category = callback_query.data.split("_", 1)[1]
 
-    toggle_category(user_id, category)
-    new_reply_markup = create_categories_menu(user_id)
+    await toggle_category(user_id, category)  # Асинхронный вызов
+    new_reply_markup = await create_categories_menu(user_id)  # Асинхронный вызов
     await callback_query.message.edit_reply_markup(reply_markup=new_reply_markup)
 
 async def no_categories_callback(callback_query: CallbackQuery):
@@ -76,7 +77,7 @@ async def no_categories_callback(callback_query: CallbackQuery):
 
 # Основная функция для запуска бота
 async def bot_main():
-    init_db()  # Инициализация базы данных перед запуском бота
+    await init_db()  # Инициализация базы данных перед запуском бота
     print('бот стартовал')
     # Добавление обработчиков
     dp.message.register(start_command, Command("start"))
@@ -86,5 +87,3 @@ async def bot_main():
     dp.callback_query.register(no_categories_callback, F.data == "no_categories")
 
     await dp.start_polling(bot)
-
-
